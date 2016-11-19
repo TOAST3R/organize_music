@@ -1,7 +1,7 @@
 require Logger
 
 defmodule OrganizeMusic do
-  def list_directories(music_folder_path) do
+  def refactor_directories(music_folder_path) do
     case File.cd(music_folder_path) do
       {:ok, _} ->
         {:ok, directories} = File.ls
@@ -32,17 +32,16 @@ defmodule OrganizeMusic do
     case band_name(directory_name) do
       {:ok, directory_name} -> 
         Logger.debug "'#{directory_name}' folder is correct already"
-      {:ok, band_bame} -> 
+      {:ok, band_name} -> 
         File.mkdir(band_name)
         
         case album_name(directory_name) do
-          {:ok, album_name}
+          {:ok, album_name} ->
             Logger.debug "new directory name: #{band_name <> "/" <> album_name}"
             File.rename(directory_name, band_name <> "/" <> album_name)
-          {:error, _}
+          {:error, _} ->
             Logger.error "directory_name: #{directory_name}"
         end
-      end
     end
   end
 end
