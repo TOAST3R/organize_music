@@ -1,6 +1,8 @@
 require Logger
 
 defmodule OrganizeMusic do
+  @first_release_year 1960
+
   def refactor_directories(music_folder_path) do
     case File.cd(music_folder_path) do
       {:ok, _} ->
@@ -16,15 +18,16 @@ defmodule OrganizeMusic do
 
   def rename_directory(directory_name) do
     case band_name(directory_name) do
-      {:ok, ^directory_name} -> 
+      ^directory_name -> 
         Logger.debug "'#{directory_name}' folder is correct already"
-      {:ok, band_name} -> 
+      band_name -> 
         File.mkdir(band_name)
         File.cd(band_name)
 
-        case album_name(directory_name) do
-          {:ok, album_name} ->
-          	new_album_path = band_name <> "/" <> album_name
+        case release(directory_name) do
+          {:ok, release} ->
+            # TODO: consider year can be nil
+          	new_album_path = "#{band_name}/(#{release[:year]}) #{release[:name]}"
             File.rename(directory_name, new_album_path)
             Logger.debug "new directory name: #{new_album_path}"
             File.cd("..")
@@ -36,30 +39,36 @@ defmodule OrganizeMusic do
     end
   end
 
-  defp band_name(directory_name) do
-    directory_name
-    |> String.split("-")
-    |> Enum.fetch(0)
+  def band_name(directory_name) do
+    case directory_name |> String.split("-") |> Enum.fetch(0) do
+      {:ok, word} ->
+        word 
+        |> String.downcase
+        |> String.trim
+      {:error, _} ->
+        directory_name
+    end   
   end
   
-  defp album_name(directory_name) do
+  def release(directory_name) do
     directory_name
+    |> String.replace(~r/\[|\]|\(|\)/, "")
+    |> String.downcase
+    |> String.trim
     |> String.split("-")
     |> Enum.drop(1)
     |> Enum.concat
-    |> String.downcase
-    |> String.replace(~r/\[|\]|\(|\)/, "")
     |> album_with_year
   end
 
   defp album_with_year(album_name) do
-    case 1960..(DateTime.utc_now().year + 1)
+    case @first_release_year..(DateTime.utc_now().year + 1)
         |> Enum.filter(&(String.match?(album_name, ~r/#{&1}/)))
         |> Enum.fetch(0) do
-    	{:ok, year} ->
-        "(#{year}) " <> String.replace(album_name, ~r/#{year}/, "")
+      {:ok, year} ->
+        %{name: String.replace(album_name, ~r/#{year}/, ""), year: year}
       :error ->
-        album_name
+        %{name: album_name}
     end
   end
 end
