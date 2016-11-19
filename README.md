@@ -7,21 +7,21 @@ This is a recurrent problem for melomaniacs, is hard to order your music collect
 
 ## This is one solution
 
-All folders must have this format:
+All directories must have this format:
 
-    /my_music/Karsten Pflum - Nemo Loon [EP] - [adn130] (2010)
+    /my_music/Karsten Pflum - Nemo Loon [EP] - (2010) [adn130] 
     /my_music/band_name - album_name
 
-Once script is executed you will have something like this:
+Once the script is executed you will have something like this:
   
-    /my_music/Karsten Pflum/Nemo Loon EP adn130 2010
+    /my_music/Karsten Pflum/(2010) Nemo Loon EP adn130
     /my_music/band_name/album_name
 
 How to execute the script that will make this renaming:
 
     iex -S mix OrganizeMusic.refactor_directories('/Users/toaster/my_music')
 
-Be carefull to execute the script in the correct folder
+#### Be carefull when running the script, make sure that you are selecting the correct folder
 
 #### Note:
 
