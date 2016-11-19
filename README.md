@@ -33,22 +33,5 @@ inside `music_folder_path` you have to:
 
     `iex -S mix`
 
-    `OrganizeMusic.refactor_directories(music_folder_path)`
-
-
-## Installation
-
-If [available in Hex](https://hex.pm/docs/publish), the package can be installed as:
-
-  1. Add organize_music to your list of dependencies in `mix.exs`:
-
-        def deps do
-          [{:organize_music, "~> 0.0.1"}]
-        end
-
-  2. Ensure organize_music is started before your application:
-
-        def application do
-          [applications: [:organize_music]]
-        end
+    `OrganizeMusic.refactor_directories('/Users/toaster/my_music')`
 
