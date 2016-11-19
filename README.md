@@ -2,7 +2,7 @@
 
 ## How should I organize my mp3 files?
 
-This is a recurrent problem for melomaniacs, is hard to order your music collection. If you have digital-music Diogenes syndrome this problem could be even worse. A standar format for your folders is mandatory: It's the only way to organize your music collection
+This is a recurrent problem for melomaniacs, is hard to order your music collection. If you have digital-music Diogenes syndrome this problem could be even worse. A standar naming format for folders is mandatory: It's the only way to organize your music collection
 
 
 ## This is one solution
@@ -19,9 +19,9 @@ Once script is executed you will have something like this:
 
 How to execute the script that will make this renaming:
 
-    iex -S mix
-    OrganizeMusic.refactor_directories('/Users/toaster/my_music')
+    iex -S mix OrganizeMusic.refactor_directories('/Users/toaster/my_music')
 
+Be carefull to execute the script in the correct folder
 
 #### Note:
 
