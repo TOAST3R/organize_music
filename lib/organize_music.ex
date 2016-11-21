@@ -68,8 +68,6 @@ defmodule OrganizeMusic do
         year
       :error ->
         ""
-      {:error, _} ->
-        ""
     end
   end
 
