@@ -22,9 +22,4 @@ defmodule OrganizeMusicTest do
     assert OrganizeMusic.year("Zeta Reticula - [2016]"), "2016"
     assert OrganizeMusic.year("Zeta Reticula"), ""
   end
-
-  test "compose_folder_name" do
-    assert OrganizeMusic.compose_folder_name("zeta reticula", "2016", "ep 5"), "zeta reticula/(2016) ep 5"
-    assert OrganizeMusic.compose_folder_name("zeta reticula", "", "ep 5"), "zeta reticula/ep 5"
-  end
 end

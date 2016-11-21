@@ -19,7 +19,8 @@ Once the script is executed you will have something like this:
 
 How to execute the script that will make this renaming:
 
-    iex -S mix OrganizeMusic.refactor_directories('/Users/toaster/my_music')
+    iex -S mix 
+    OrganizeMusic.reorganize_directories('/Users/toaster/my_music')
 
 #### Be carefull when running the script, make sure that you are selecting the correct folder
 
