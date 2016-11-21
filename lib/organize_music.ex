@@ -19,35 +19,35 @@ defmodule OrganizeMusic do
   def rename_directory(directory_name) do
     case band_name(directory_name) do
       ^directory_name -> 
-        Logger.debug "'#{directory_name}' folder is correct already"
+        Logger.debug "'#{directory_name}' folder is not valid"
       band_name -> 
         File.mkdir(band_name)
-        File.cd(band_name)
-
-        case release(directory_name) do
-          {:ok, release} ->
+        
+        case release_without_year(directory_name) do
+          {:ok, release_name} ->
             # TODO: consider year can be nil
-          	new_album_path = "#{band_name}/(#{release[:year]}) #{release[:name]}"
+            new_album_path = compose_folder_name(band_name, year(directory_name), release_name)
             File.rename(directory_name, new_album_path)
             Logger.debug "new directory name: #{new_album_path}"
-            File.cd("..")
-
+          
           {:error, _} ->
             Logger.error "directory_name: #{directory_name}"
-            File.cd("..")
         end
     end
   end
 
+  def compose_folder_name(band_name, release_year, release_name) do
+    case release_year do
+      "" -> "#{band_name}/#{release_name}"
+      _ -> "#{band_name}/(#{release_year}) #{release_name}"
+    end
+  end
+
   def band_name(directory_name) do
-    case directory_name |> String.split("-") |> Enum.fetch(0) do
-      {:ok, word} ->
-        word 
-        |> String.downcase
-        |> String.trim
-      {:error, _} ->
-        directory_name
-    end   
+    {:ok, band_name} = directory_name 
+                       |> String.split("-") 
+                       |> Enum.fetch(0)
+    band_name
   end
   
   def release(directory_name) do
@@ -57,18 +57,23 @@ defmodule OrganizeMusic do
     |> String.trim
     |> String.split("-")
     |> Enum.drop(1)
-    |> Enum.concat
-    |> album_with_year
+    |> List.foldl("", &(&2 <>&1))
   end
 
-  defp album_with_year(album_name) do
+  def year(directory_name) do
     case @first_release_year..(DateTime.utc_now().year + 1)
-        |> Enum.filter(&(String.match?(album_name, ~r/#{&1}/)))
-        |> Enum.fetch(0) do
+         |> Enum.filter(&(String.match?(release(directory_name), ~r/#{&1}/)))
+         |> Enum.fetch(0) do
       {:ok, year} ->
-        %{name: String.replace(album_name, ~r/#{year}/, ""), year: year}
+        year
       :error ->
-        %{name: album_name}
+        ""
+      {:error, _} ->
+        ""
     end
+  end
+
+  def release_without_year(directory_name) do
+    String.replace(release(directory_name), ~r/#{year(directory_name)}/, "")
   end
 end
