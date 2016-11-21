@@ -29,11 +29,11 @@ defmodule OrganizeMusic do
 
   def band_name(directory_name) do
     {:ok, band_name} = directory_name
-                       |> String.downcase
-                       |> String.trim
                        |> String.split("-")
                        |> Enum.fetch(0)
     band_name
+    |> String.trim
+    |> String.downcase
   end
 
   def year(directory_name) do
@@ -49,7 +49,7 @@ defmodule OrganizeMusic do
 
   def release_without_year(directory_name) do
     String.replace(release(directory_name), ~r/#{year(directory_name)}/, "")
-    |> String.replace(~r/\[\]|\(\)/, "")
+    |> String.replace(~r/\[\]|  |\(\)/, "")
     |> String.downcase
     |> String.trim
   end
@@ -64,7 +64,8 @@ defmodule OrganizeMusic do
   def composed_folder_name(band_name, release_year, release_name) do
     case release_year do
       "" -> band_name <> "/" <> release_name
-      _ -> band_name <> "/(#{release_year})" <> release_name
+      _ -> band_name <> "/(#{release_year}) " <> release_name
     end
+    |> String.downcase
   end
 end
