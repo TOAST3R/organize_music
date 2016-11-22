@@ -9,7 +9,6 @@ defmodule OrganizeMusic do
         {:ok, directories} = File.ls
         directories
         |> Enum.filter_map(&(File.dir?(&1)), &(rename_directory(&1)))
-     
       {:error, :enoent} ->
         Logger.error "#{music_folder_path} it is not a valid absolute path"
     end
@@ -21,17 +20,21 @@ defmodule OrganizeMusic do
         Logger.debug "'#{directory_name}' do not have the format 'band_name' - 'release_name'"
       band_name -> 
         File.mkdir(band_name)
-        new_album_path = composed_folder_name(band_name, year(directory_name), release_without_year(directory_name))
-        File.rename(directory_name, new_album_path)
-        Logger.debug "new directory name: #{new_album_path}"
+
+        new_album_path = band_name <> release_with_year(directory_name)
+        case File.rename(directory_name, new_album_path) do
+          :ok ->
+            File.rm_rf(directory_name)
+            Logger.debug "new directory: #{new_album_path}"
+          {:error, reason} ->
+            Logger.error "error #{reason} renaming directory from: #{directory_name} to #{new_album_path}"
+        end
     end
   end
 
   def band_name(directory_name) do
-    {:ok, band_name} = directory_name
-                       |> String.split("-")
-                       |> Enum.fetch(0)
-    band_name
+    directory_name
+    |> String.replace(~r/-.*/, "")
     |> String.trim
     |> String.downcase
   end
@@ -48,10 +51,19 @@ defmodule OrganizeMusic do
   end
 
   def release_without_year(directory_name) do
-    String.replace(release(directory_name), ~r/#{year(directory_name)}/, "")
-    |> String.replace(~r/\[\]|  |\(\)/, "")
+    release(directory_name)
+    |> String.replace(~r/#{year(directory_name)}/, "")
+    |> String.replace(~r/\[\]|\(\)/, "")
+    |> String.replace(~r/  /, " ")
     |> String.downcase
     |> String.trim
+  end
+
+  def release_with_year(directory_name) do
+    case year(directory_name) do
+      "" -> ""
+      release_year -> "(#{release_year})"
+    end <> release_without_year(directory_name)
   end
 
   defp release(directory_name) do
@@ -59,13 +71,5 @@ defmodule OrganizeMusic do
     |> String.split("-")
     |> Enum.drop(1)
     |> List.foldl("", &(&2 <>&1))
-  end
-
-  def composed_folder_name(band_name, release_year, release_name) do
-    case release_year do
-      "" -> band_name <> "/" <> release_name
-      _ -> band_name <> "/(#{release_year}) " <> release_name
-    end
-    |> String.downcase
   end
 end
