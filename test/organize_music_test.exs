@@ -18,8 +18,8 @@ defmodule OrganizeMusicTest do
 
   test "year" do
     assert OrganizeMusic.year("Zeta Reticula - EP 5 (2016)") == 2016
-    assert OrganizeMusic.year("Zeta Reticula - EP 5") == ""
+    assert OrganizeMusic.year("Zeta Reticula - EP 5") == nil
     assert OrganizeMusic.year("Zeta Reticula - [2016]") == 2016
-    assert OrganizeMusic.year("Zeta Reticula") == ""
+    assert OrganizeMusic.year("Zeta Reticula") == nil
   end
 end

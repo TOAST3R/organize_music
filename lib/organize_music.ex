@@ -4,14 +4,8 @@ defmodule OrganizeMusic do
   @first_release_year 1960
 
   def reorganize_directories(music_folder_path) do
-    case File.cd(music_folder_path) do
-      :ok ->
-        {:ok, directories} = File.ls
-        directories
-        |> Enum.filter_map(&(File.dir?(&1)), &(rename_directory(&1)))
-      {:error, :enoent} ->
-        Logger.error "#{music_folder_path} it is not a valid absolute path"
-    end
+    File.cd!(music_folder_path)
+    File.ls! |> Enum.filter_map(&(File.dir?(&1)), &(rename_directory(&1)))
   end
 
   def rename_directory(directory_name) do
@@ -40,14 +34,8 @@ defmodule OrganizeMusic do
   end
 
   def year(directory_name) do
-    case @first_release_year..(DateTime.utc_now().year + 1)
-         |> Enum.filter(&(String.match?(release(directory_name), ~r/#{&1}/)))
-         |> Enum.fetch(0) do
-      {:ok, year} ->
-        year
-      :error ->
-        ""
-    end
+    @first_release_year..(DateTime.utc_now().year + 1)
+    |> Enum.find(&(String.match?(release(directory_name), ~r/#{&1}/)))
   end
 
   def release_without_year(directory_name) do
@@ -61,8 +49,8 @@ defmodule OrganizeMusic do
 
   def release_with_year(directory_name) do
     case year(directory_name) do
-      "" -> ""
-      release_year -> "(#{release_year})"
+      "" -> "/"
+      release_year -> "/(#{release_year}) "
     end <> release_without_year(directory_name)
   end
 
