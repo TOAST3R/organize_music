@@ -22,33 +22,6 @@ defmodule OrganizeMusic do
     file |> File.close
   end
 
-  def band_to_csv(band_name, csv_file) do
-    File.cd(band_name)
-    File.ls!
-    |> Enum.map(&(release_to_csv(&1, band_name, csv_file)))
-    File.cd("..")
-  end
-
-  def release_to_csv(release_name, band_name, csv_file) do
-    IO.binwrite(csv_file, "#{band_name};#{release_name};\r\n")
-  end
-
-  def rename_directory(directory_name) do
-    case band_name(directory_name) do
-      ^directory_name -> 
-        Logger.error "'#{directory_name}' do not have the format 'band_name' - 'release_name'"
-      band_name -> 
-        File.mkdir(band_name)
-
-        new_album_path = "#{band_name}/#{release_with_year(directory_name)}"
-        case File.rename(directory_name, new_album_path) do
-          :ok -> ""
-          {:error, reason} ->
-            Logger.error "error #{reason} renaming directory from: #{directory_name} to #{new_album_path}"
-        end
-    end
-  end
-
   def band_name(directory_name) do
     directory_name
     |> String.replace(~r/-.*/, "")
@@ -70,7 +43,34 @@ defmodule OrganizeMusic do
     |> String.trim
   end
 
-  def release_with_year(directory_name) do
+  defp band_to_csv(band_name, csv_file) do
+    File.cd(band_name)
+    File.ls!
+    |> Enum.map(&(release_to_csv(&1, band_name, csv_file)))
+    File.cd("..")
+  end
+
+  defp release_to_csv(release_name, band_name, csv_file) do
+    IO.binwrite(csv_file, "#{band_name};#{release_name};\r\n")
+  end
+
+  defp rename_directory(directory_name) do
+    case band_name(directory_name) do
+      ^directory_name -> 
+        Logger.error "'#{directory_name}' do not have the format 'band_name' - 'release_name'"
+      band_name -> 
+        File.mkdir(band_name)
+
+        new_album_path = "#{band_name}/#{release_with_year(directory_name)}"
+        case File.rename(directory_name, new_album_path) do
+          :ok -> ""
+          {:error, reason} ->
+            Logger.error "error #{reason} renaming directory from: #{directory_name} to #{new_album_path}"
+        end
+    end
+  end
+
+  defp release_with_year(directory_name) do
     case year(directory_name) do
       nil -> release_without_year(directory_name)
       release_year -> "(#{release_year}) #{release_without_year(directory_name)}"

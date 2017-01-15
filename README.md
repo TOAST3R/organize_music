@@ -27,7 +27,7 @@ To rename all folder in the given music folder, just execute:
 
 ## Export collection to a csv
 
-To exporta a resume of releases in your collection to a file "music_collection.csv" execute:  
+To export a resume of releases in your collection to a file "music_collection.csv" execute:  
 
     iex -S mix 
     OrganizeMusic.export_to_csv('/Users/toaster/Music')
