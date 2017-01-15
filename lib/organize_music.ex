@@ -15,11 +15,11 @@ defmodule OrganizeMusic do
       band_name -> 
         File.mkdir(band_name)
 
-        new_album_path = band_name <> release_with_year(directory_name)
+        new_album_path = "#{band_name}/#{release_with_year(directory_name)}"
         case File.rename(directory_name, new_album_path) do
           :ok ->
-            File.rm_rf(directory_name)
             Logger.debug "new directory: #{new_album_path}"
+            File.rm_rf!(directory_name)
           {:error, reason} ->
             Logger.error "error #{reason} renaming directory from: #{directory_name} to #{new_album_path}"
         end
@@ -49,8 +49,8 @@ defmodule OrganizeMusic do
 
   def release_with_year(directory_name) do
     case year(directory_name) do
-      "" -> "/"
-      release_year -> "/(#{release_year}) "
+      "" -> ""
+      release_year -> "(#{release_year}) "
     end <> release_without_year(directory_name)
   end
 
