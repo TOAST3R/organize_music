@@ -5,21 +5,20 @@ defmodule OrganizeMusic do
 
   def reorganize_directories(music_folder_path) do
     File.cd!(music_folder_path)
-    File.ls! |> Enum.filter_map(&(File.dir?(&1)), &(rename_directory(&1)))
+    File.ls! 
+    |> Enum.filter_map(&(File.dir?(&1)), &(rename_directory(&1)))
   end
 
   def rename_directory(directory_name) do
     case band_name(directory_name) do
       ^directory_name -> 
-        Logger.debug "'#{directory_name}' do not have the format 'band_name' - 'release_name'"
+        Logger.error "'#{directory_name}' do not have the format 'band_name' - 'release_name'"
       band_name -> 
         File.mkdir(band_name)
 
         new_album_path = "#{band_name}/#{release_with_year(directory_name)}"
         case File.rename(directory_name, new_album_path) do
-          :ok ->
-            Logger.debug "new directory: #{new_album_path}"
-            File.rm_rf!(directory_name)
+          :ok -> ""
           {:error, reason} ->
             Logger.error "error #{reason} renaming directory from: #{directory_name} to #{new_album_path}"
         end
@@ -49,15 +48,15 @@ defmodule OrganizeMusic do
 
   def release_with_year(directory_name) do
     case year(directory_name) do
-      "" -> ""
-      release_year -> "(#{release_year}) "
-    end <> release_without_year(directory_name)
+      nil -> release_without_year(directory_name)
+      release_year -> "(#{release_year}) #{release_without_year(directory_name)}"
+    end
   end
 
   defp release(directory_name) do
     directory_name
     |> String.split("-")
     |> Enum.drop(1)
-    |> List.foldl("", &(&2 <>&1))
+    |> List.foldl("", &(&2 <> &1))
   end
 end
