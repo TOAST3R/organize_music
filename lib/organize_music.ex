@@ -5,8 +5,32 @@ defmodule OrganizeMusic do
 
   def reorganize_directories(music_folder_path) do
     File.cd!(music_folder_path)
-    File.ls! 
+    File.ls!
     |> Enum.filter_map(&(File.dir?(&1)), &(rename_directory(&1)))
+    
+    music_folder_path |> export_to_csv
+  end
+
+  def export_to_csv(music_folder_path) do
+    file_name = "#{music_folder_path}/music_collection.csv"
+    File.rm_rf file_name
+    {:ok, file} = File.open file_name, [:append]
+
+    File.ls!
+    |> Enum.filter_map(&(File.dir?(&1)), &(band_to_csv(&1, file)))
+
+    file |> File.close
+  end
+
+  def band_to_csv(band_name, csv_file) do
+    File.cd(band_name)
+    File.ls!
+    |> Enum.map(&(release_to_csv(&1, band_name, csv_file)))
+    File.cd("..")
+  end
+
+  def release_to_csv(release_name, band_name, csv_file) do
+    IO.binwrite(csv_file, "#{band_name};#{release_name};\r\n")
   end
 
   def rename_directory(directory_name) do
