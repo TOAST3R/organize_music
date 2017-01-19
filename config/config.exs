@@ -20,7 +20,9 @@ use Mix.Config
 #
 #     config :logger, level: :info
 #
-
+# https://console.developers.google.com/apis/api/youtube.googleapis.com/overview?project=organize-music&duration=PT1H
+config :tubex, Tubex,
+  api_key: "AIzaSyCuLC-ucZMwhBhCLuIDEO6Yc4DjOPTFZwo"
 # It is also possible to import configuration files, relative to this
 # directory. For example, you can emulate configuration per environment
 # by uncommenting the line below and defining dev.exs, test.exs and such.

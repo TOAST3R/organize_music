@@ -14,7 +14,7 @@ defmodule OrganizeMusic.Mixfile do
   #
   # Type "mix help compile.app" for more information
   def application do
-    [applications: [:logger]]
+    [applications: [:logger, :tubex]]
   end
 
   # Dependencies can be Hex packages:
@@ -27,6 +27,6 @@ defmodule OrganizeMusic.Mixfile do
   #
   # Type "mix help deps" for more examples and options
   defp deps do
-    []
+    [tubex: "~> 0.0.1"]
   end
 end

@@ -7,11 +7,10 @@ defmodule OrganizeMusic do
     File.cd!(music_folder_path)
     File.ls!
     |> Enum.filter_map(&(File.dir?(&1)), &(rename_directory(&1)))
-    
-    music_folder_path |> export_to_csv
   end
 
   def export_to_csv(music_folder_path) do
+    File.cd!(music_folder_path)
     file_name = "#{music_folder_path}/music_collection.csv"
     File.rm_rf file_name
     {:ok, file} = File.open file_name, [:append]
