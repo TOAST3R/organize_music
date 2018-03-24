@@ -23,7 +23,7 @@ defmodule OrganizeMusic do
 
   def band_name(directory_name) do
     directory_name
-    |> String.replace(~r/-.*/, "")
+    |> String.replace(~r/-|‎–.*/, "")
     |> String.trim
     |> String.downcase
   end
@@ -56,7 +56,7 @@ defmodule OrganizeMusic do
   defp rename_directory(directory_name) do
     case band_name(directory_name) do
       ^directory_name -> 
-        Logger.error "'#{directory_name}' do not have the format 'band_name' - 'release_name'"
+        Logger.info "'#{directory_name}' do not have the format 'band_name' - 'release_name'"
       band_name -> 
         File.mkdir(band_name)
 
@@ -78,7 +78,7 @@ defmodule OrganizeMusic do
 
   defp release(directory_name) do
     directory_name
-    |> String.split("-")
+    |> String.split(["-", "‎–"])
     |> Enum.drop(1)
     |> List.foldl("", &(&2 <> &1))
   end
